@@ -6,8 +6,12 @@ import os
 import datetime
 import winsound
 
-CHANGE_CONSTANT = 0.5
+CHANGE_AMPLITUDE_CONSTANT = 0.1
 WAIT_TIME = 60
+
+# amp .1 1
+# freq 1 1
+# pacing 2 0
 
 COMMAND_LIST = [
     ("SINE", None),
@@ -54,16 +58,16 @@ COMMAND_LIST = [
 ]
 
 LOCATIONS = {
-    "SINE": (10, 10),
-    "RA": (10, 10),
-    "AMPLITUDE_UP": (10, 10),
-    "AMPLITUDE_DOWN": (10, 10),
-    "PACING_AMPLITUDE_UP": (10, 10),
-    "PACING_AMPLITUDE_DOWN": (10, 10),
-    "FREQUENCY_UP": (10, 10),
-    "FREQUENCY_DOWN": (10, 10),
-    "LL": (10, 10),
-    "V1":(10, 10),
+    "SINE": (457, 217),
+    "RA": (955, 189),
+    "AMPLITUDE_UP": (709, 204),
+    "AMPLITUDE_DOWN": (708, 219),
+    "PACING_AMPLITUDE_UP": (869, 486),
+    "PACING_AMPLITUDE_DOWN": (870, 501),
+    "FREQUENCY_UP": (706, 264),
+    "FREQUENCY_DOWN": (707, 281),
+    "LL": (950, 234),
+    "V1":(953, 260),
 }
 
 class Command:
@@ -82,13 +86,13 @@ class Command:
         else:
             button_press = 1
             if self.name.split("_")[0] == "AMPLITUDE":
-                button_press = abs((self.change - current_amplitude))/CHANGE_CONSTANT if self.change else 1
+                button_press = abs((self.change - current_amplitude))/CHANGE_AMPLITUDE_CONSTANT if self.change else 1
                 current_amplitude = self.change if self.change else current_amplitude
             elif self.name.split("_")[0] == "FREQUENCY":
-                button_press = abs((self.change - current_frequency))/CHANGE_CONSTANT if self.change else 1
+                button_press = abs((self.change - current_frequency)) if self.change else 1
                 current_frequency = self.change if self.change else current_frequency
             else:
-                button_press = abs((self.change - current_pacing_amplitude))/CHANGE_CONSTANT if self.change else 1
+                button_press = abs((self.change - current_pacing_amplitude)) if self.change else 1
                 current_pacing_amplitude = self.change if self.change else current_pacing_amplitude
             location = LOCATIONS.get(self.name, None)
             if location is not None:
@@ -117,8 +121,8 @@ def initialize_logs():
     return os.path.join(logs_folder_path, f"{timestamp_str}.log")
 
 def main():
-    frequency = 0
-    amplitude = 0
+    frequency = 1
+    amplitude = 1
     pacing_amplitude = 0
     logging.basicConfig(
         filename=initialize_logs(), 
