@@ -129,7 +129,7 @@ def main():
     )
     command_queue = initialize_queue()
     while not command_queue.empty():
-        frequency, amplitude = command_queue.get().execute(frequency, amplitude, pacing_amplitude)
+        frequency, amplitude, pacing_amplitude = command_queue.get().execute(frequency, amplitude, pacing_amplitude)
         logging.info(f"Frequency: {frequency}, Amplitude: {amplitude}, Pacing Amplitude: {pacing_amplitude}")
 
 if __name__ == "__main__":
