@@ -4,10 +4,10 @@ import queue
 import time
 import os
 import datetime
+import winsound
 
 CHANGE_CONSTANT = 0.5
-FREQUENCY = 0 # 0Hz
-AMPLITUDE  = 0 # 0mV
+WAIT_TIME = 60
 
 COMMAND_LIST = [
     ("SINE", None),
@@ -15,41 +15,40 @@ COMMAND_LIST = [
     ("AMPLITUDE_UP", 0), # 0mV
     ("FREQUENCY_UP", 2), # 0Hz - 2Hz
     ("RECORD_TIME", None),
-    # ("WAIT", 60),
-    ("WAIT", 1),
+    ("WAIT", WAIT_TIME),
     ("LL", None),
     ("RECORD_TIME", None),
-    ("WAIT", 1),
+    ("WAIT", WAIT_TIME),
     ("V1", None),
     ("RECORD_TIME", None),
-    ("WAIT", 1),
+    ("WAIT", WAIT_TIME),
     ("RA", None),
     ("AMPLITUDE_UP", 2), # 0mV - 2mV
 
     ("RECORD_TIME",None),
-    ("WAIT", 1),
+    ("WAIT", WAIT_TIME),
     ("LL", None),
     ("RECORD_TIME",None),
-    ("WAIT", 1),
+    ("WAIT", WAIT_TIME),
     ("V1", None),
     ("RECORD_TIME",None),
-    ("WAIT", 1),
+    ("WAIT", WAIT_TIME),
     ("RA", None),
 
     ("FREQUENCY_UP", 10), # 2Hz - 10Hz
     ("RECORD_TIME",None),
 
-    ("WAIT", 1),
+    ("WAIT", WAIT_TIME),
     ("LL", None),
     ("RECORD_TIME",None),
-    ("WAIT", 1),
+    ("WAIT", WAIT_TIME),
     ("V1", None),
     ("RECORD_TIME",None),
-    ("WAIT", 1),
+    ("WAIT", WAIT_TIME),
     ("RA", None),
 
     ("FREQUENCY_DOWN", 5), # 10Hz - 5Hz
-    ("WAIT", 1),
+    ("WAIT", WAIT_TIME),
     ("PACING_AMPLITUDE_UP", 2),
     ("RECORD_TIME",None),
 ]
@@ -99,9 +98,9 @@ class Command:
                     logging.info(f"Clicking {self.name} at {location}")
         return current_frequency, current_amplitude, current_pacing_amplitude
 
-def print_queue(queue):
-    while not queue.empty():
-        print(queue.get().name)
+# def print_queue(queue):
+#     while not queue.empty():
+#         print(queue.get().name)
 
 def initialize_queue():
     command_queue = queue.Queue()
