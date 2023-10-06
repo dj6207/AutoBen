@@ -6,55 +6,76 @@ import os
 import datetime
 import winsound
 
-CHANGE_AMPLITUDE_CONSTANT = 0.1
-WAIT_TIME = 60
+VERSION = 1.0
 
-# amp .1 1
-# freq 1 1
-# pacing 2 0
+# How much 
+CHANGE_AMPLITUDE_CONSTANT = 0.1
+CHANGE_PACING_AMPLITUDE_CONSTANT = 2
+WAIT_TIME = 1
+START_DELAY = 1
 
 COMMAND_LIST = [
     ("SINE", None),
-    ("RA", None),
-    ("AMPLITUDE_UP", 0), # 0mV
+    ("AMPLITUDE_DOWN", 0), # 0mV
     ("FREQUENCY_UP", 2), # 0Hz - 2Hz
     ("RECORD_TIME", None),
     ("WAIT", WAIT_TIME),
+    ("RA", None),
     ("LL", None),
     ("RECORD_TIME", None),
     ("WAIT", WAIT_TIME),
+    ("LL", None),
     ("V1", None),
     ("RECORD_TIME", None),
     ("WAIT", WAIT_TIME),
+    ("V1", None),
     ("RA", None),
     ("AMPLITUDE_UP", 2), # 0mV - 2mV
 
     ("RECORD_TIME",None),
     ("WAIT", WAIT_TIME),
+    ("RA", None),
     ("LL", None),
     ("RECORD_TIME",None),
     ("WAIT", WAIT_TIME),
+    ("LL", None),
     ("V1", None),
     ("RECORD_TIME",None),
     ("WAIT", WAIT_TIME),
+    ("V1", None),
     ("RA", None),
 
     ("FREQUENCY_UP", 10), # 2Hz - 10Hz
     ("RECORD_TIME",None),
 
     ("WAIT", WAIT_TIME),
+    ("RA", None),
     ("LL", None),
     ("RECORD_TIME",None),
     ("WAIT", WAIT_TIME),
+    ("LL", None),
     ("V1", None),
     ("RECORD_TIME",None),
     ("WAIT", WAIT_TIME),
+    ("V1", None),
     ("RA", None),
 
     ("FREQUENCY_DOWN", 5), # 10Hz - 5Hz
     ("WAIT", WAIT_TIME),
     ("PACING_AMPLITUDE_UP", 2),
+
     ("RECORD_TIME",None),
+    ("WAIT", WAIT_TIME),
+    ("RA", None),
+    ("LL", None),
+    ("RECORD_TIME",None),
+    ("WAIT", WAIT_TIME),
+    ("LL", None),
+    ("V1", None),
+    ("RECORD_TIME",None),
+    ("WAIT", WAIT_TIME),
+    ("V1", None),
+    ("RA", None),
 ]
 
 LOCATIONS = {
@@ -85,26 +106,26 @@ class Command:
             time.sleep(self.change)
         else:
             button_press = 1
+            # Amplitude starts a 1mV and changesby 0.1
             if self.name.split("_")[0] == "AMPLITUDE":
-                button_press = abs((self.change - current_amplitude))/CHANGE_AMPLITUDE_CONSTANT if self.change else 1
-                current_amplitude = self.change if self.change else current_amplitude
+                button_press = abs((self.change - current_amplitude))/CHANGE_AMPLITUDE_CONSTANT if self.change is not None else 1
+                current_amplitude = self.change if self.change is not None else current_amplitude
+            # Frequency starts at 1Hz and changes by 1
             elif self.name.split("_")[0] == "FREQUENCY":
-                button_press = abs((self.change - current_frequency)) if self.change else 1
-                current_frequency = self.change if self.change else current_frequency
+                button_press = abs((self.change - current_frequency)) if self.change is not None else 1
+                current_frequency = self.change if self.change is not None else current_frequency
+            # Pacing amplitude starts at 0 and changes by 2
             else:
-                button_press = abs((self.change - current_pacing_amplitude)) if self.change else 1
-                current_pacing_amplitude = self.change if self.change else current_pacing_amplitude
+                button_press = abs((self.change - current_pacing_amplitude))/CHANGE_PACING_AMPLITUDE_CONSTANT if self.change is not None else 1
+                current_pacing_amplitude = self.change if self.change is not None else current_pacing_amplitude
             location = LOCATIONS.get(self.name, None)
             if location is not None:
+                logging.info(f"Pressed {int(button_press)} times")
                 for _ in range(int(button_press)):
                     pya.click(location)
                     print(f"Clicking {self.name} at {location}")
                     logging.info(f"Clicking {self.name} at {location}")
         return current_frequency, current_amplitude, current_pacing_amplitude
-
-# def print_queue(queue):
-#     while not queue.empty():
-#         print(queue.get().name)
 
 def initialize_queue():
     command_queue = queue.Queue()
@@ -131,9 +152,14 @@ def main():
         datefmt="%m-%d-%Y %H.%M.%S"
     )
     command_queue = initialize_queue()
+    print(f"Auto_Ben Version {VERSION}")
+    logging.info(f"Auto_Ben Version {VERSION}")
+    print(f"Script will Start in {START_DELAY} Seconds")
+    time.sleep(START_DELAY)
     while not command_queue.empty():
         frequency, amplitude, pacing_amplitude = command_queue.get().execute(frequency, amplitude, pacing_amplitude)
         logging.info(f"Frequency: {frequency}, Amplitude: {amplitude}, Pacing Amplitude: {pacing_amplitude}")
+    winsound.PlaySound("sound.wav", winsound.SND_FILENAME)
 
 if __name__ == "__main__":
     main()
