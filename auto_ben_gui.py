@@ -29,6 +29,11 @@ class AutoBenGUI(tk.Tk):
 
         self.start_button = tk.Button(self, text="Start", command=self.start_main)
         self.start_button.grid(row=4, column=0, columnspan=2, sticky='WE')
+        
+        self.grid_columnconfigure(0, weight=1)
+
+        self.update_idletasks()
+        self.geometry(f"300x{self.winfo_height()}")
 
     def select_log_location(self):
         directory = filedialog.askdirectory()
